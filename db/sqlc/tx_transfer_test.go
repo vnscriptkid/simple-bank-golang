@@ -18,7 +18,7 @@ func TestTransferTxn(t *testing.T) {
 	errors := make(chan error)
 	results := make(chan TransferTxResult)
 
-	n := 1
+	n := 10
 
 	for i := 0; i < n; i++ {
 		go func() {
@@ -42,34 +42,29 @@ func TestTransferTxn(t *testing.T) {
 
 		assert.NotEmpty(t, result)
 
-		// // FromAccount Account  `json:"from_account"`
-		// fromAcc := result.FromAccount
-		// assert.Equal(t, account1.ID, fromAcc.ID)
+		// FromAccount Account  `json:"from_account"`
+		// ToAccount   Account  `json:"to_account"`
 
-		// // ToAccount   Account  `json:"to_account"`
-		// toAcc := result.FromAccount
-		// assert.Equal(t, account1.ID, toAcc.ID)
+		// Transfer    Transfer `json:"transfer"`
+		transfer := result.Transfer
+		assert.Equal(t, transfer.Amount, amount)
+		assert.Equal(t, transfer.FromAccountID, account1.ID)
+		assert.Equal(t, transfer.ToAccountID, account2.ID)
+		assert.NotEmpty(t, transfer.ID)
+		assert.NotEmpty(t, transfer.CreatedAt)
 
-		// // Transfer    Transfer `json:"transfer"`
-		// transfer := result.Transfer
-		// assert.Equal(t, transfer.Amount, amount)
-		// assert.Equal(t, transfer.FromAccountID, account1.ID)
-		// assert.Equal(t, transfer.ToAccountID, account2.ID)
-		// assert.Greater(t, transfer.ID, 0)
-		// assert.NotEmpty(t, transfer.CreatedAt)
+		// FromEntry   Entry    `json:"from_entry"`
+		fromEntry := result.FromEntry
+		assert.Equal(t, fromEntry.Amount, -amount)
+		assert.Equal(t, fromEntry.AccountID, account1.ID)
+		assert.NotEmpty(t, fromEntry.ID)
+		assert.NotEmpty(t, fromEntry.CreatedAt)
 
-		// // FromEntry   Entry    `json:"from_entry"`
-		// fromEntry := result.FromEntry
-		// assert.Equal(t, fromEntry.Amount, -amount)
-		// assert.Equal(t, fromEntry.AccountID, account1.ID)
-		// assert.Greater(t, fromEntry.ID, 0)
-		// assert.NotEmpty(t, fromEntry.CreatedAt)
-
-		// // ToEntry     Entry    `json:"to_entry"`
-		// toEntry := result.ToEntry
-		// assert.Equal(t, toEntry.Amount, amount)
-		// assert.Equal(t, toEntry.AccountID, account2.ID)
-		// assert.Greater(t, toEntry.ID, 0)
-		// assert.NotEmpty(t, toEntry.CreatedAt)
+		// ToEntry     Entry    `json:"to_entry"`
+		toEntry := result.ToEntry
+		assert.Equal(t, toEntry.Amount, amount)
+		assert.Equal(t, toEntry.AccountID, account2.ID)
+		assert.NotEmpty(t, toEntry.ID)
+		assert.NotEmpty(t, toEntry.CreatedAt)
 	}
 }
