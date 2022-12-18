@@ -22,7 +22,7 @@ func TestTransferTxn(t *testing.T) {
 	errors := make(chan error)
 	results := make(chan TransferTxResult)
 
-	n := 3
+	n := 10
 
 	for i := 0; i < n; i++ {
 		go func() {
@@ -106,7 +106,7 @@ func TestDeadlockInTransferTxn(t *testing.T) {
 
 	errors := make(chan error)
 
-	n := 3
+	n := 10
 
 	for i := 0; i < n; i++ {
 		fromAccId := account1.ID

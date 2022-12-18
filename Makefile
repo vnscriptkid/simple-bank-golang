@@ -32,3 +32,6 @@ sqlc:
 
 test:
 	go test -v -cover ./...
+
+psql:
+	docker exec -it bank-pg psql -U postgres

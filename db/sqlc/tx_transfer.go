@@ -51,36 +51,79 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 			return err
 		}
 
-		// TODO: Update user's balance
-		fromAcc, err := q.GetAccountForUpdate(ctx, int64(arg.FromAccountID))
+		// Update user's balance
+		// For ref: GET+SET pattern
+		/*
+			fromAcc, err := q.GetAccountForUpdate(ctx, int64(arg.FromAccountID))
 
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
+
+			result.FromAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+				ID:      arg.FromAccountID,
+				Balance: fromAcc.Balance - arg.Amount,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			toAcc, err := q.GetAccount(ctx, int64(arg.ToAccountID))
+
+			if err != nil {
+				return err
+			}
+
+			result.ToAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+				ID:      arg.ToAccountID,
+				Balance: toAcc.Balance + arg.Amount,
+			})
+
+			if err != nil {
+				return err
+			}
+		*/
+
+		if arg.FromAccountID < arg.ToAccountID {
+			result.FromAccount, err = q.UpdateAccountByAmount(ctx, UpdateAccountByAmountParams{
+				ID:     arg.FromAccountID,
+				Amount: -arg.Amount,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			result.ToAccount, err = q.UpdateAccountByAmount(ctx, UpdateAccountByAmountParams{
+				ID:     arg.ToAccountID,
+				Amount: arg.Amount,
+			})
+
+			if err != nil {
+				return err
+			}
+		} else {
+			result.ToAccount, err = q.UpdateAccountByAmount(ctx, UpdateAccountByAmountParams{
+				ID:     arg.ToAccountID,
+				Amount: arg.Amount,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			result.FromAccount, err = q.UpdateAccountByAmount(ctx, UpdateAccountByAmountParams{
+				ID:     arg.FromAccountID,
+				Amount: -arg.Amount,
+			})
+
+			if err != nil {
+				return err
+			}
 		}
 
-		result.FromAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
-			ID:      arg.FromAccountID,
-			Balance: fromAcc.Balance - arg.Amount,
-		})
-
-		if err != nil {
-			return err
-		}
-
-		toAcc, err := q.GetAccount(ctx, int64(arg.ToAccountID))
-
-		if err != nil {
-			return err
-		}
-
-		result.ToAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
-			ID:      arg.ToAccountID,
-			Balance: toAcc.Balance + arg.Amount,
-		})
-
-		if err != nil {
-			return err
-		}
+		// TODO: May throw if ID does not exist and returns empty
 
 		return nil
 	})
