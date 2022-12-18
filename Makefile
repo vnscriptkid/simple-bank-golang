@@ -6,6 +6,9 @@ network:
 pg:
 	docker run --name bank-pg --network bank-network -p 5433:5432 -e POSTGRES_USER=postgres -e POSTGRES_DB=bank -e POSTGRES_PASSWORD=123456 -d postgres:14.5
 
+startpg:
+	docker start bank-pg
+
 createdb:
 	docker exec -it bank-pg createdb --username=postgres --owner=postgres bank
 

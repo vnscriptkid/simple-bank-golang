@@ -8,6 +8,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/vnscriptkid/simple-bank-golang/api"
 	db "github.com/vnscriptkid/simple-bank-golang/db/sqlc"
+	"github.com/vnscriptkid/simple-bank-golang/util"
 )
 
 const (
@@ -17,7 +18,13 @@ const (
 )
 
 func main() {
-	conn, err := sql.Open(DBDriver, DBSource)
+	config, err := util.LoadConfig(".")
+
+	if err != nil {
+		log.Fatal("cannot load config")
+	}
+
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 
 	if err != nil {
 		log.Fatal("cannot connect to db")
@@ -26,11 +33,11 @@ func main() {
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 
-	err = server.Start(ServerAddress)
+	err = server.Start(config.ServerAddress)
 
 	if err != nil {
-		log.Fatal("cannot start server at " + ServerAddress)
+		log.Fatal("cannot start server at " + config.ServerAddress)
 	}
 
-	fmt.Println("server started at " + ServerAddress)
+	fmt.Println("server started at " + config.ServerAddress)
 }
