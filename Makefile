@@ -35,3 +35,6 @@ test:
 
 psql:
 	docker exec -it bank-pg psql -U postgres
+
+server:
+	go run main.go
