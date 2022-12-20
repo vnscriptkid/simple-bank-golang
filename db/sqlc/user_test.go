@@ -9,12 +9,16 @@ import (
 )
 
 func createFakeUser(t *testing.T) User {
+	hashedPwd, err := util.HashPassword(util.RandomString(6))
+
+	assert.NoError(t, err)
+
 	params := CreateUserParams{
 		// Owner:    util.RandomOwner(),
 		// Balance:  util.RandomInt(0, 1000),
 		// Currency: util.RandomCurrency(),
 		Username:       util.RandomOwner(),
-		HashedPassword: "secret",
+		HashedPassword: hashedPwd,
 		FullName:       util.RandomOwner(),
 		Email:          util.RandomEmail(),
 	}
