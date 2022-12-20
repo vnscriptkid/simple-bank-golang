@@ -11,6 +11,7 @@ import (
 
 type createAccountRequest struct {
 	Currency string `json:"currency" binding:"required,currency"`
+	Owner    string `json:"owner" binding:"required"`
 }
 
 func (server *Server) createAccount(ctx *gin.Context) {
@@ -23,6 +24,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 	arg := db.CreateAccountParams{
 		Currency: req.Currency,
 		Balance:  0,
+		Owner:    req.Owner,
 	}
 
 	account, err := server.store.CreateAccount(ctx, arg)

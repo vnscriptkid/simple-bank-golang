@@ -11,8 +11,10 @@ import (
 )
 
 func createFakeAccount(t *testing.T) Account {
+	user := createFakeUser(t)
+
 	params := CreateAccountParams{
-		Owner:    util.RandomOwner(),
+		Owner:    user.Username,
 		Balance:  util.RandomInt(0, 1000),
 		Currency: util.RandomCurrency(),
 	}
@@ -33,23 +35,9 @@ func createFakeAccount(t *testing.T) Account {
 }
 
 func TestCreateAccount(t *testing.T) {
-	params := CreateAccountParams{
-		Owner:    "Example Owner",
-		Balance:  99,
-		Currency: "USD",
-	}
+	acc := createFakeAccount(t)
 
-	acc, err := testQueries.CreateAccount(context.Background(), params)
-
-	assert.NoError(t, err)
 	assert.NotEmpty(t, acc)
-
-	assert.Equal(t, params.Owner, acc.Owner)
-	assert.Equal(t, params.Balance, acc.Balance)
-	assert.Equal(t, params.Currency, acc.Currency)
-
-	assert.NotEmpty(t, acc.CreatedAt)
-	assert.NotEmpty(t, acc.ID)
 }
 
 func TestGetAccount(t *testing.T) {
