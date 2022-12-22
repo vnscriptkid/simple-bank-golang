@@ -90,21 +90,29 @@ func TestDeleteAccount(t *testing.T) {
 }
 
 func TestListAccount(t *testing.T) {
+	var firstAcc Account
+
 	for i := 0; i < 10; i++ {
-		createFakeAccount(t)
+		acc := createFakeAccount(t)
+
+		if i == 0 {
+			firstAcc = acc
+		}
 	}
 
 	params := ListAccountsParams{
-		Offset: 5,
+		Offset: 0,
 		Limit:  5,
+		Owner:  firstAcc.Owner,
 	}
 
 	accList, err := testQueries.ListAccounts(context.Background(), params)
 
 	assert.NoError(t, err)
-	assert.Len(t, accList, 5)
+	assert.Len(t, accList, 1)
 
 	for _, acc := range accList {
 		assert.NotEmpty(t, acc)
+		assert.Equal(t, acc.Owner, firstAcc.Owner)
 	}
 }
